@@ -1,6 +1,6 @@
 # comfyui-KargaLLM
 
-A lightweight, standalone ComfyUI node pack for LLM-powered text and prompt generation.
+A lightweight, standalone ComfyUI node for LLM-powered text and prompt generation.
 Connects to any OpenAI-compatible local LLM server — LM Studio, Ollama, or any compat endpoint.
 
 ---
