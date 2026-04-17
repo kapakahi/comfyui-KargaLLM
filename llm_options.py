@@ -9,18 +9,14 @@ Connecting this to Karga LLM Text Generator is optional — defaults are used if
 class KargaLLMOptions:
 
     CATEGORY = "KargaLLM"
-    RETURN_TYPES = ("LLM_OPTIONS", "STRING")
-    RETURN_NAMES = ("options",     "thoughts")
+    RETURN_TYPES = ("LLM_OPTIONS",)
+    RETURN_NAMES = ("options",)
     FUNCTION = "pack"
     OUTPUT_NODE = False
     DESCRIPTION = (
         "Bundles all LLM sampling and behaviour settings into a single wire. "
-        "Optional — defaults are used if not connected to Karga LLM Text Generator. "
-        "thoughts output carries the chain-of-thought trace when enable_thinking is ON."
+        "Optional — defaults are used if not connected to Karga LLM Text Generator."
     )
-
-    # Store thoughts from last generation so we can output them
-    _last_thoughts: str = ""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -48,7 +44,7 @@ class KargaLLMOptions:
                     "BOOLEAN",
                     {
                         "default": False,
-                        "tooltip": "Enables chain-of-thought reasoning for compatible models. Outputs reasoning trace to the thoughts output.",
+                        "tooltip": "Enables chain-of-thought reasoning for compatible models. Outputs reasoning trace to the thoughts output on the main node.",
                     }
                 ),
                 "temperature": (
@@ -97,7 +93,7 @@ class KargaLLMOptions:
                     "INT",
                     {
                         "default": 120, "min": 10, "max": 600, "step": 10,
-                        "tooltip": "Seconds to wait for LLM response before giving up. Overrides the global DEFAULT_TIMEOUT in llm_api.py.",
+                        "tooltip": "Seconds to wait for LLM response before giving up.",
                     }
                 ),
                 "timeout_skip": (
@@ -127,8 +123,7 @@ class KargaLLMOptions:
     def pack(self, system_prompt, system_prompt_mode, enable_thinking,
              temperature, top_k, top_p, min_p, repeat_penalty,
              use_model_defaults, timeout, timeout_skip, verbose, stop_server_after):
-
-        options = {
+        return ({
             "system_prompt":       system_prompt,
             "system_prompt_mode":  system_prompt_mode,
             "enable_thinking":     enable_thinking,
@@ -142,13 +137,4 @@ class KargaLLMOptions:
             "timeout_skip":        timeout_skip,
             "verbose":             verbose,
             "stop_server_after":   stop_server_after,
-        }
-
-        # thoughts is populated by KargaLLMTextGen after generation
-        # we pass back whatever was stored from the last run
-        return (options, KargaLLMOptions._last_thoughts)
-
-    @classmethod
-    def set_thoughts(cls, thoughts: str):
-        """Called by KargaLLMTextGen to store thoughts for output."""
-        cls._last_thoughts = thoughts or ""
+        },)
