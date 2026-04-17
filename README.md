@@ -5,7 +5,7 @@ Connects to any OpenAI-compatible local LLM server — LM Studio, Ollama, or any
 
 ---
 
-<p align="center"><img src="extra/preview.png" height="250" alt="KargaLLM's logo" /></p>
+<p align="center"><img src="extra/preview.png" height="450" alt="KargaLLM's logo" /></p>
 
 ---
 
