@@ -1,9 +1,3 @@
-"""
-KargaLLM — Karga LLM Text Generator
-======================================
-LLM-powered text/prompt generator. Fully standalone, zero external dependencies.
-Modes defined in modes.py. Options node is optional.
-"""
 from __future__ import annotations
 import time
 from .llm_api import (
@@ -11,7 +5,6 @@ from .llm_api import (
     DEFAULT_BASE_URL, DEFAULT_TIMEOUT, CONNECT_ON_STARTUP
 )
 from .modes import get_mode_names, get_mode
-from .llm_options import KargaLLMOptions
 
 
 def _get_setting(key: str, default):
@@ -55,8 +48,7 @@ class KargaLLMTextGen:
     DESCRIPTION = (
         "Generates or enhances text using a local LLM (LM Studio or Ollama). "
         "Connect Karga LLM Text Generator Options for full control, or run standalone with defaults. "
-        "enable_llm is a built-in SPST switch — toggle on node or wire a BOOLEAN to control externally. "
-        "thoughts output is on the Options node when enable_thinking is ON."
+        "enable_llm is a built-in SPST switch — toggle on node or wire a BOOLEAN to control externally."
     )
 
     @classmethod
@@ -144,8 +136,7 @@ class KargaLLMTextGen:
         # --- SPST open circuit ---
         if not enable_llm:
             status = _build_status(False, "—", ["Disabled", "enable_llm = False"])
-            KargaLLMOptions.set_thoughts("")
-            return ("", status)
+            return ("", "", status)
 
         # --- Unpack options ---
         options        = options or {}
@@ -246,12 +237,8 @@ class KargaLLMTextGen:
 
         elapsed = time.time() - t_start
 
-        # Store thoughts in Options node for output
-        KargaLLMOptions.set_thoughts(thinking or "")
-
         # --- Handle errors ---
         if error:
-            KargaLLMOptions.set_thoughts("")
             if error == "timeout":
                 if timeout_skip:
                     print(f"[Karga LLM] Timeout after {timeout}s — returning user prompt.")
@@ -260,21 +247,21 @@ class KargaLLMTextGen:
                         mode, LLM_Model,
                         f"seed:{seed}", f"{elapsed:.1f}s", f"timeout:{timeout}s",
                     ])
-                    return (LLM_Prompt, status)
+                    return (LLM_Prompt, "", status)
                 else:
                     status = _build_status(verbose, "⚠", [
                         "Timeout", mode, LLM_Model,
                         f"seed:{seed}", f"{elapsed:.1f}s", f"timeout:{timeout}s",
                     ])
                     print(f"[Karga LLM] Timeout after {timeout}s.")
-                    return ("", status)
+                    return ("", "", status)
 
             elif error == "connection_error":
                 status = _build_status(verbose, "✗", [
                     "Failed · could not connect", mode, LLM_Model, _base_url(),
                 ])
                 print(f"[Karga LLM] Connection failed → {_base_url()}")
-                return ("", status)
+                return ("", "", status)
 
             elif error == "no_model":
                 status = _build_status(verbose, "✗", [
@@ -282,21 +269,21 @@ class KargaLLMTextGen:
                     "check LLM_Model or DEFAULT_MODEL in llm_api.py",
                 ])
                 print(f"[Karga LLM] No model selected.")
-                return ("", status)
+                return ("", "", status)
 
             elif error == "invalid_response":
                 status = _build_status(verbose, "✗", [
                     "Failed · invalid response", mode, LLM_Model,
                 ])
                 print(f"[Karga LLM] Invalid response from server.")
-                return ("", status)
+                return ("", "", status)
 
             else:
                 status = _build_status(verbose, "✗", [
                     f"Failed · {error}", mode, LLM_Model,
                 ])
                 print(f"[Karga LLM] Error: {error}")
-                return ("", status)
+                return ("", "", status)
 
         # --- Success ---
         if verbose:
@@ -322,7 +309,7 @@ class KargaLLMTextGen:
         status = _build_status(verbose, "✓", parts)
         print(f"[Karga LLM] {status}")
 
-        return (output or "", status)
+        return (output or "", thinking or "", status)
 
     # -----------------------------------------------------------------------
     # Helpers
