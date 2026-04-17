@@ -1,7 +1,7 @@
 """
 KargaNodes — LLM Modes
 ========================
-Add, edit, or remove modes here.
+Add, edit, or remove modes (system prompts) here.
 Each mode appears automatically in the node's dropdown.
 
 Keys per mode:
