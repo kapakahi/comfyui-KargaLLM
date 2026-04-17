@@ -48,8 +48,8 @@ def _build_status(verbose: bool, icon: str, parts: list[str]) -> str:
 class KargaLLMTextGen:
 
     CATEGORY = "KargaLLM"
-    RETURN_TYPES = ("STRING", "STRING")
-    RETURN_NAMES = ("generated_text", "status")
+    RETURN_TYPES = ("STRING", "STRING", "STRING")
+    RETURN_NAMES = ("generated_text", "thoughts", "status")
     FUNCTION = "generate"
     OUTPUT_NODE = False
     DESCRIPTION = (
