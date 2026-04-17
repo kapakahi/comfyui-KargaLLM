@@ -1,11 +1,3 @@
-"""
-KargaLLM — Karga LLM Text Generator Options
-=============================================
-Packs all LLM sampling + behaviour settings into a single LLM_OPTIONS wire.
-Connecting this to Karga LLM Text Generator is optional — defaults are used if not connected.
-"""
-
-
 class KargaLLMOptions:
 
     CATEGORY = "KargaLLM"
